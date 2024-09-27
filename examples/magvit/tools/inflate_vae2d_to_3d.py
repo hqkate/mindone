@@ -11,18 +11,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(__dir__, "..")))
 from videogvt.config.vqgan3d_ucf101_config import get_config
 from videogvt.models.vqvae import build_model
 
-context.set_context(
-    mode=1,
-    device_target="Ascend",
-    device_id=7,
-    ascend_config={"precision_mode": "allow_mix_precision_bf16"},
-)
+context.set_context(mode=1, device_target="Ascend", device_id=7)
 
 
 def inflate(vae2d_ckpt, save_fp):
     model_config = get_config()
-    dtype = {"fp32": ms.float32, "fp16": ms.float16, "bf16": ms.bfloat16}[args.dtype]
-    vae3d = build_model("vqvae-3d", model_config, is_training=True, pretrained=args.pretrained, dtype=dtype)
+    dtype = ms.float32
+    vae3d = build_model("vqvae-3d", model_config, is_training=False, dtype=dtype)
     vae2d = ms.load_checkpoint(vae2d_ckpt)
 
     vae_2d_keys = list(vae2d.keys())
