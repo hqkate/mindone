@@ -8,7 +8,8 @@ from mindspore import context
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.abspath(os.path.join(__dir__, "..")))
 
-from videogvt.models.vqvae import VQVAE_3D
+from videogvt.config.vqgan3d_ucf101_config import get_config
+from videogvt.models.vqvae import build_model
 
 context.set_context(
     mode=1,
@@ -19,17 +20,9 @@ context.set_context(
 
 
 def inflate(vae2d_ckpt, save_fp):
-    vae3d = VQVAE_3D(
-        in_out_channels=3,
-        latent_embed_dim=18,
-        embed_dim=18,
-        filters=128,
-        num_res_blocks=4,
-        channel_multipliers=(1, 2, 2, 4),
-        temporal_downsample=(True, True, True),
-        spatial_downsample=(True, True, True),
-        dtype=ms.float32,
-    )
+    model_config = get_config()
+    dtype = {"fp32": ms.float32, "fp16": ms.float16, "bf16": ms.bfloat16}[args.dtype]
+    vae3d = build_model("vqvae-3d", model_config, is_training=True, pretrained=args.pretrained, dtype=dtype)
     vae2d = ms.load_checkpoint(vae2d_ckpt)
 
     vae_2d_keys = list(vae2d.keys())
