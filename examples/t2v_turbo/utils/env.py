@@ -21,6 +21,7 @@ def init_env(
     global_bf16: bool = False,
     strategy_ckpt_save_file: str = "",
     optimizer_weight_shard_size: int = 8,
+    pipeline_stages: int = 8,
     debug: bool = False,
     dtype: ms.dtype = ms.float32,
 ):
@@ -78,6 +79,17 @@ def init_env(
                 gradients_mean=True,
                 device_num=device_num,
             )
+        
+        elif parallel_mode == "pipeline":
+            logger.info("use pipeline parallel")
+            ms.set_auto_parallel_context(
+                parallel_mode=ms.ParallelMode.SEMI_AUTO_PARALLEL,
+                pipeline_stages=pipeline_stages,
+                pipeline_result_broadcast=True,
+            )
+            init()
+            device_num = get_group_size()
+            rank_id = get_rank()
 
     else:
         device_num = 1

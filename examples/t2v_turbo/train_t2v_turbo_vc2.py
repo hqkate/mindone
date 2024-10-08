@@ -339,7 +339,18 @@ def main(args):
         reward_fn=reward_fn,
         video_rm_fn=video_rm_fn,
         use_recompute=True,
-    ).set_train()
+    )
+
+    if args.parallel_mode == "pipeline":
+        lcd_with_loss = nn.PipelineCell(lcd_with_loss, args.pipeline_stages)
+        lcd_with_loss.vae.pipeline_stage = 0
+        lcd_with_loss.text_encoder.pipeline_stage = 0
+        lcd_with_loss.teacher_unet.pipeline_stage = 0
+        lcd_with_loss.unet.pipeline_stage = 0
+        lcd_with_loss.reward_fn.pipeline_stage = 1
+        lcd_with_loss.video_rm_fn.pipeline_stage = 1
+
+    lcd_with_loss.set_train()
 
     # Optimizer creation
     optimizer = create_optimizer(
@@ -376,6 +387,9 @@ def main(args):
         clip_norm=args.max_grad_norm,
         ema=ema,
     )
+
+    if args.parallel_mode == "pipeline":
+        net_with_grads.grad_reducer = nn.PipelineGradReducer(optimizer.parameters)
 
     args.num_train_epochs = 20  # FIXME!
     start_epoch = 0
