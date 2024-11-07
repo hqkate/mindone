@@ -60,15 +60,15 @@ def calculate_ssim(videos1, videos2):
 
     ssim_results = np.array(ssim_results)
 
-    ssim = {}
+    ssim_score = {}
     ssim_std = {}
 
     for clip_timestamp in range(len(video1)):
-        ssim[clip_timestamp] = np.mean(ssim_results[:, clip_timestamp])
+        ssim_score[clip_timestamp] = np.mean(ssim_results[:, clip_timestamp])
         ssim_std[clip_timestamp] = np.std(ssim_results[:, clip_timestamp])
 
     result = {
-        "value": ssim,
+        "value": ssim_score,
         "value_std": ssim_std,
         "video_setting": video1.shape,
         "video_setting_name": "time, channel, heigth, width",
