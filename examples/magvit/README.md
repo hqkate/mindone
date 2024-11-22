@@ -13,15 +13,15 @@ Thanks for their great work.
 - [x] VQVAE-2d Training
 - [x] VQVAE-3d Training
 - [x] VQGAN Training
-- [ ] MAGVIT-v2 Transformers
-- [ ] MAGVIT-v2 Training
+
 
 ## Requirements
 
-### Mindspore + Ascend
-- **Env**: `Python 3.8.18` and [`CANN 8.0.RC2.beta1`](https://www.hiascend.com/software/cann)
-- **Main Dependencies**: [`Mindspore>=2.3`](https://www.mindspore.cn/)
-- **Other Dependencies**: see in `requirements.txt`
+The scripts have been tested on Ascend 910B chips under the following requirements:
+
+| mindspore | ascend driver | firmware | cann toolkit/kernel |
+| --------- | ------------- | -------- | ------------------- |
+| 2.3.1  | 24.1.RC2 | 7.3.0.1.231 |	CANN 8.0.RC2.beta1 |
 
 #### Installation Tutorials:
 
