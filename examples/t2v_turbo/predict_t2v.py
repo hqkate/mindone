@@ -16,7 +16,8 @@ mindone_lib_path = os.path.abspath(os.path.join(__dir__, "../../"))
 sys.path.insert(0, mindone_lib_path)
 sys.path.insert(0, os.path.abspath(os.path.join(__dir__, "..")))
 
-from pipeline.t2v_turbo_vc2_pipeline import T2VTurboVC2Pipeline, T2VTurboMSPipeline
+from pipeline.t2v_turbo_vc2_pipeline import T2VTurboVC2Pipeline
+from pipeline.t2v_turbo_ms_pipeline import T2VTurboMSPipeline
 from model_scope.unet_3d_condition import UNet3DConditionModel
 from scheduler.t2v_turbo_scheduler import T2VTurboScheduler
 from tools.convert_weights import convert_lora, convert_t2v_vc2
@@ -63,7 +64,7 @@ def download_vc2(args):
     unet_dir, t2v_dir = args.unet_dir, args.base_model_dir
 
     if not os.path.exists(unet_dir):
-        print(f"Downloading UNet model to {unet_dir}...")
+        logger.info(f"Downloading UNet model to {unet_dir}...")
         DownLoad().download_url(LORA_URL_VC2, path=MODEL_CACHE_VC2)
         convert_lora(
             src_path=os.path.join(MODEL_CACHE_VC2, "unet_lora.pt"),
@@ -72,7 +73,7 @@ def download_vc2(args):
         unet_dir = os.path.join(MODEL_CACHE_VC2, "unet_lora.ckpt")
 
     if not os.path.exists(t2v_dir):
-        print(f"Downloading base model to {t2v_dir}...")
+        logger.info(f"Downloading base model to {t2v_dir}...")
         DownLoad().download_url(VC2_URL_VC2, path=MODEL_CACHE_VC2)
         convert_t2v_vc2(
             src_path=os.path.join(MODEL_CACHE_VC2, "model.ckpt"),
@@ -87,7 +88,7 @@ def download_ms(args):
     """Download MS model and LoRA weights."""
     unet_dir = args.unet_dir
     if not os.path.exists(unet_dir):
-        print(f"Downloading UNet model to {unet_dir}...")
+        logger.info(f"Downloading UNet model to {unet_dir}...")
         DownLoad().download_url(LORA_URL_MS, path=MODEL_CACHE_MS)
         convert_lora(
             src_path=os.path.join(MODEL_CACHE_MS, "unet_lora.pt"),
@@ -104,7 +105,7 @@ def load_t2v_pipeline(args):
     if args.teacher == "vc2":
         return load_vc2_pipeline(t2v_dir, unet_dir, args)
     else:
-        return load_ms_pipeline(unet_dir, args)
+        return load_ms_pipeline(t2v_dir, unet_dir, args)
 
 
 def load_vc2_pipeline(t2v_dir, unet_dir, args):
@@ -160,10 +161,15 @@ def load_vc2_pipeline(t2v_dir, unet_dir, args):
     return T2VTurboVC2Pipeline(pretrained_t2v, scheduler, model_config)
 
 
-def load_ms_pipeline(unet_dir, args):
+def load_ms_pipeline(t2v_dir, unet_dir, args):
     """Load the MS pipeline."""
     dtype = dtype_map[args.dtype]
-    pretrained_model_path = MODEL_URL_MS
+    if os.path.exists(t2v_dir):
+        pretrained_model_path = t2v_dir
+        logger.info(f"Using pretrained model from directory: {t2v_dir}")
+    else:
+        pretrained_model_path = MODEL_URL_MS
+        logger.warning(f"Directory {t2v_dir} not found. Falling back to default model URL: {MODEL_URL_MS}")
     tokenizer = CLIPTokenizer.from_pretrained(pretrained_model_path, subfolder="tokenizer")
     text_encoder = CLIPTextModel.from_pretrained(pretrained_model_path, subfolder="text_encoder")
     vae = AutoencoderKL.from_pretrained(pretrained_model_path, subfolder="vae")
@@ -229,8 +235,8 @@ def main(args):
     pipeline = load_t2v_pipeline(args)
 
     # Mixed-precision setup
-    amp_level = "O2" if args.dtype not in ["fp32", "bf16"] else "O0"
-    if amp_level == "O2" and not args.global_bf16:
+    amp_level = "O2"
+    if not args.global_bf16:
         for module in [pipeline.unet, pipeline.vae]:
             module = auto_mixed_precision(
                 module,
@@ -289,7 +295,7 @@ def parse_args():
     )
 
     # Data Type and Precision
-    parser.add_argument("--dtype", default="fp32", type=str, choices=["bf16", "fp16", "fp32"], help="Data type to use.")
+    parser.add_argument("--dtype", default="fp16", type=str, choices=["bf16", "fp16"], help="Data type to use.")
     parser.add_argument("--global_bf16", default=False, type=str2bool, help="Use bf16 if supported.")
     parser.add_argument("--keep_gn_fp32", default=True, type=str2bool, help="Keep GroupNorm in fp32.")
     parser.add_argument(
