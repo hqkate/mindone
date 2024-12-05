@@ -87,7 +87,7 @@ def download_vc2(args):
 def download_ms(args):
     """Download MS model and LoRA weights."""
     unet_dir = args.unet_dir
-    if not os.path.exists(unet_dir):
+    if not os.path.isdir(unet_dir):
         logger.info(f"Downloading UNet model to {unet_dir}...")
         DownLoad().download_url(LORA_URL_MS, path=MODEL_CACHE_MS)
         convert_lora(
