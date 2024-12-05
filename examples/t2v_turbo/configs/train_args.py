@@ -1,5 +1,6 @@
 import argparse
 import os
+
 from mindone.utils.config import str2bool
 
 
