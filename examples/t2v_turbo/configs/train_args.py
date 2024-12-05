@@ -58,6 +58,9 @@ def add_training_arguments(parser):
     training_group.add_argument("--logging_dir", type=str, default="logs", help="TensorBoard log directory.")
     training_group.add_argument("--log_interval", type=int, default=1, help="Log interval.")
 
+    # Recompute
+    training_group.add_argument("--use_recompute", default=False, type=str2bool, help="if use recompute")
+
     # Checkpointing
     training_group.add_argument(
         "--checkpoints_total_limit", type=int, default=5, help="Max number of checkpoints to store."
@@ -104,6 +107,10 @@ def add_learning_rate_arguments(parser):
         "--gradient_accumulation_steps", type=int, default=1, help="Steps to accumulate before updating."
     )
     lr_group.add_argument("--drop_overflow_update", type=str2bool, default=True, help="Drop overflow update.")
+    lr_group.add_argument("--loss_scaler_type", default="dynamic", type=str, help="dynamic or static")
+    lr_group.add_argument("--init_loss_scale", default=65536, type=float, help="loss scale")
+    lr_group.add_argument("--loss_scale_factor", default=2, type=float, help="loss scale factor")
+    lr_group.add_argument("--scale_window", default=2000, type=float, help="scale window")
 
 
 def add_optimizer_arguments(parser):
