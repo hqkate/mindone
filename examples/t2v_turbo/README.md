@@ -213,7 +213,7 @@ bash scripts/train_t2v_turbo_vc2_parallel.sh
 
 ### Two-stage training
 
-If your device is unable to perform full-scale training iterations. We provide a two-stage training script that sequentially divides different training losses into multiple stages to achieve results comparable to the original training process.
+Since Mindspore is still in the rapid development stage and does not yet fully support the parallel method used in the source code, we adopted staged training as an alternative method. We provide a two-stage training script that sequentially divides different training losses into multiple stages to achieve results comparable to the original training process.
 
 We divide the entire training into two stages:
 - stage-1: training using distillation loss and image text reward loss

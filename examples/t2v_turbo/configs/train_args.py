@@ -91,6 +91,17 @@ def add_training_arguments(parser):
         "--max_train_samples", type=int, default=400000, help="Limit on training examples for debugging."
     )
 
+    # Model
+    training_group.add_argument(
+        "--unet_time_cond_proj_dim",
+        type=int,
+        default=256,
+        help=(
+            "The dimension of the guidance scale embedding in the U-Net, which will be used if the teacher U-Net"
+            " does not have `time_cond_proj_dim` set."
+        ),
+    )
+
 
 def add_learning_rate_arguments(parser):
     """Add learning rate arguments."""
@@ -137,6 +148,16 @@ def add_lcd_arguments(parser):
         "--loss_type", type=str, default="huber", choices=["l2", "huber", "none"], help="Type of loss for LCD."
     )
     lcd_group.add_argument("--huber_c", type=float, default=0.001, help="Huber loss parameter.")
+    lcd_group.add_argument(
+        "--timestep_scaling_factor",
+        type=float,
+        default=10.0,
+        help=(
+            "The multiplicative timestep scaling factor used when calculating the boundary scalings for LCM. The"
+            " higher the scaling is, the lower the approximation error, but the default value of 10.0 should typically"
+            " suffice."
+        ),
+    )
 
 
 def add_lora_arguments(parser):
@@ -169,7 +190,6 @@ def add_mixed_precision_arguments(parser):
     mixed_prec_group.add_argument(
         "--global_bf16", type=str2bool, default=False, help="Override dtype to bf16 if supported."
     )
-    mixed_prec_group.add_argument("--allow_tf32", action="store_true", help="Allow TF32 on Ampere GPUs.")
     mixed_prec_group.add_argument(
         "--cast_teacher_unet", action="store_true", help="Cast teacher U-Net to specified precision."
     )
