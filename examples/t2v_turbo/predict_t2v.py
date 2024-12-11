@@ -85,7 +85,7 @@ def download_vc2(args):
 def download_ms(args):
     """Download MS model and LoRA weights."""
     unet_dir = args.unet_dir
-    if not os.path.isdir(unet_dir):
+    if not os.path.exists(unet_dir):
         logger.info(f"Downloading UNet model to {unet_dir}...")
         DownLoad().download_url(LORA_URL_MS, path=MODEL_CACHE_MS)
         convert_lora(
@@ -162,7 +162,7 @@ def load_vc2_pipeline(t2v_dir, unet_dir, args):
 def load_ms_pipeline(t2v_dir, unet_dir, args):
     """Load the MS pipeline."""
     dtype = dtype_map[args.dtype]
-    if os.path.exists(t2v_dir):
+    if os.path.isdir(t2v_dir):
         pretrained_model_path = t2v_dir
         logger.info(f"Using pretrained model from directory: {t2v_dir}")
     else:
