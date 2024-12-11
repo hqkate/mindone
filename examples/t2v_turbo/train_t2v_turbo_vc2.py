@@ -17,6 +17,7 @@ mindone_lib_path = os.path.abspath(os.path.join(__dir__, "../../"))
 sys.path.insert(0, mindone_lib_path)
 sys.path.insert(0, os.path.abspath(os.path.join(__dir__, "..")))
 
+from configs.train_args import parse_args
 from data.dataset import create_dataloader
 from lvdm.modules.encoders.openclip_tokenizer import tokenize
 from ode_solver import DDIMSolver
@@ -29,7 +30,6 @@ from utils.env import init_env
 from utils.lora_handler import LoraHandler
 from utils.utils import freeze_params, instantiate_from_config
 
-from examples.t2v_turbo.configs.train_args import parse_args
 from mindone.diffusers.models.autoencoders.vae import DiagonalGaussianDistribution
 from mindone.diffusers.training_utils import set_seed
 from mindone.trainers.ema import EMA
@@ -59,7 +59,6 @@ def main(args):
         parallel_mode="data",
         device_target=args.device_target,
         jit_level=args.jit_level,
-        global_bf16=args.global_bf16,
         debug=args.debug,
         dtype=dtype,
     )

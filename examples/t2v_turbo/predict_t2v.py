@@ -139,17 +139,16 @@ def load_vc2_pipeline(t2v_dir, unet_dir, args):
         dropout=0.1,
         r=64,
     )
-    unet.set_train(False)
     collapse_lora(unet, lora_manager.unet_replace_modules)
     monkeypatch_remove_lora(unet)
 
-    if args.dtype != "fp32":
-        unet_config["params"]["dtype"] = args.dtype
-        new_unet = instantiate_from_config(unet_config)
-        ms.load_param_into_net(new_unet, unet.parameters_dict(), False)
-        pretrained_t2v.model.diffusion_model = new_unet
+    unet_config["params"]["dtype"] = args.dtype
+    new_unet = instantiate_from_config(unet_config)
+    ms.load_param_into_net(new_unet, unet.parameters_dict(), False)
+    new_unet.set_train(False)
 
-    pretrained_t2v.set_train(False)
+    pretrained_t2v.model.diffusion_model = new_unet
+    pretrained_t2v = pretrained_t2v.to_float(dtype_map[args.dtype])
 
     # Prepare the pipeline
     scheduler = T2VTurboScheduler(
@@ -195,6 +194,9 @@ def load_ms_pipeline(t2v_dir, unet_dir, args):
     monkeypatch_remove_lora(unet)
     unet.set_train(False)
 
+    unet = unet.to_float(dtype)
+    vae = vae.to_float(dtype)
+
     # Prepare the pipeline
     noise_scheduler = T2VTurboScheduler()
     return T2VTurboMSPipeline(
@@ -225,16 +227,16 @@ def main(args):
         distributed=False,
         device_target=args.device_target,
         jit_level=args.jit_level,
-        global_bf16=args.global_bf16,
         debug=args.debug,
+        dtype=dtype_map[args.dtype],
     )
 
     # Prepare the Text-to-Video pipeline
     pipeline = load_t2v_pipeline(args)
 
     # Mixed-precision setup
-    amp_level = "O2"
-    if not args.global_bf16:
+    if args.dtype != "fp32":
+        amp_level = "O2"
         for module in [pipeline.unet, pipeline.vae]:
             module = auto_mixed_precision(
                 module,
@@ -242,7 +244,7 @@ def main(args):
                 dtype=dtype_map[args.dtype],
                 custom_fp32_cells=[nn.GroupNorm] if args.keep_gn_fp32 else [],
             )
-        logger.info(f"Set mixed precision to O2 with dtype={args.dtype}")
+        logger.info(f"Set mixed precision to {amp_level} with dtype={args.dtype}")
 
     # Inference
     generator = np.random.Generator(np.random.PCG64(args.seed))
@@ -293,8 +295,7 @@ def parse_args():
     )
 
     # Data Type and Precision
-    parser.add_argument("--dtype", default="fp16", type=str, choices=["bf16", "fp16"], help="Data type to use.")
-    parser.add_argument("--global_bf16", default=False, type=str2bool, help="Use bf16 if supported.")
+    parser.add_argument("--dtype", default="fp16", type=str, choices=["bf16", "fp16", "fp32"], help="Data type to use.")
     parser.add_argument("--keep_gn_fp32", default=True, type=str2bool, help="Keep GroupNorm in fp32.")
     parser.add_argument(
         "--jit_level", default="O0", type=str, choices=["O0", "O1", "O2"], help="Compilation optimization level."
