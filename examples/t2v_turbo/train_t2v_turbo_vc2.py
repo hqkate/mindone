@@ -18,6 +18,7 @@ sys.path.insert(0, mindone_lib_path)
 sys.path.insert(0, os.path.abspath(os.path.join(__dir__, "..")))
 
 from data.dataset import create_dataloader
+from lvdm.modules.encoders.openclip_tokenizer import tokenize
 from ode_solver import DDIMSolver
 from pipeline.lcd_with_loss import LCDWithLoss
 from reward_fn import get_reward_fn
@@ -37,9 +38,6 @@ from mindone.trainers.optim import create_optimizer
 from mindone.trainers.recorder import PerfRecorder
 from mindone.trainers.train_step import TrainOneStepWrapper
 from mindone.utils.logger import set_logger
-
-sys.path.append("./mindone/examples/stable_diffusion_xl")
-from gm.modules.embedders.open_clip.tokenizer import tokenize
 
 logger = logging.getLogger(__name__)
 

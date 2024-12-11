@@ -17,6 +17,7 @@ mindone_lib_path = os.path.abspath(os.path.join(__dir__, "../../"))
 sys.path.insert(0, mindone_lib_path)
 sys.path.insert(0, os.path.abspath(os.path.join(__dir__, "..")))
 
+from lvdm.modules.encoders.openclip_tokenizer import tokenize
 from model_scope.unet_3d_condition import UNet3DConditionModel
 from pipeline.t2v_turbo_ms_pipeline import T2VTurboMSPipeline
 from pipeline.t2v_turbo_vc2_pipeline import T2VTurboVC2Pipeline
@@ -35,9 +36,6 @@ from mindone.utils.amp import auto_mixed_precision
 from mindone.utils.config import str2bool
 from mindone.utils.logger import set_logger
 from mindone.visualize.videos import save_videos
-
-sys.path.append("../stable_diffusion_xl")
-from gm.modules.embedders.open_clip.tokenizer import tokenize
 
 # Logging configuration
 logger = logging.getLogger(__name__)

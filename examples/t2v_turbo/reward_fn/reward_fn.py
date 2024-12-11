@@ -5,14 +5,12 @@ from random import randrange
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from lvdm.modules.encoders.clip import CLIPModel, parse, support_list
+from lvdm.modules.encoders.openclip_tokenizer import tokenize
 from utils.utils import freeze_params
 
 import mindspore as ms
 from mindspore import nn, ops
 from mindspore.dataset import transforms, vision
-
-sys.path.append("../stable_diffusion_xl")
-from gm.modules.embedders.open_clip.tokenizer import tokenize
 
 # Image processing
 CLIP_RESIZE = vision.Resize((224, 224), interpolation=vision.Inter.BICUBIC)
