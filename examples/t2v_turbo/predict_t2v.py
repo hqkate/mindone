@@ -22,8 +22,8 @@ from model_scope.unet_3d_condition import UNet3DConditionModel
 from pipeline.t2v_turbo_ms_pipeline import T2VTurboMSPipeline
 from pipeline.t2v_turbo_vc2_pipeline import T2VTurboVC2Pipeline
 from scheduler.t2v_turbo_scheduler import T2VTurboScheduler
-from tools.convert_weights import convert_lora, convert_t2v_vc2
 from utils.common_utils import load_model_checkpoint, set_torch_2_attn
+from utils.convert_weights import convert_lora, convert_t2v_vc2
 from utils.download import DownLoad
 from utils.env import init_env
 from utils.lora import collapse_lora, monkeypatch_remove_lora

@@ -142,10 +142,10 @@ The model weights will automatically downloaded and converted in mindspore forma
 
 ```bash
 # convert VideoCarfter2 Model
-python tools/convert_weights.py --source PATH-TO-VideoCrafter2-model.ckpt --target PATH-TO-VideoCrafter2-MODEL.ckpt --type vc2
+python utils/convert_weights.py --source PATH-TO-VideoCrafter2-model.ckpt --target PATH-TO-VideoCrafter2-MODEL.ckpt --type vc2
 
 # convert unet_lora.pt
-python tools/convert_weights.py --source PATH-TO-unet_lora.pt --target PATH_TO_UNET_LORA.ckpt --type lora
+python utils/convert_weights.py --source PATH-TO-unet_lora.pt --target PATH_TO_UNET_LORA.ckpt --type lora
 ```
 
 5. Generate text-to-video via following command:
@@ -166,7 +166,7 @@ python predict_t2v.py \
 
 ```bash
 # convert unet_lora.pt
-python tools/convert_weights.py --source PATH-TO-unet_lora.pt --target PATH-TO-unet_lora.ckpt --type lora
+python utils/convert_weights.py --source PATH-TO-unet_lora.pt --target PATH-TO-unet_lora.ckpt --type lora
 ```
 
 4. Generate text-to-video via following command:
@@ -191,13 +191,13 @@ To train T2V-Turbo (VC2), first prepare the data and model as below
 
 ```bash
 # convert VideoCarfter2 Model
-python tools/convert_weights.py --source PATH-TO-VideoCrafter2-model.ckpt --target PATH-TO-VideoCrafter2-model-ms.ckpt --type vc2
+python utils/convert_weights.py --source PATH-TO-VideoCrafter2-model.ckpt --target PATH-TO-VideoCrafter2-model-ms.ckpt --type vc2
 
 # convert InternVid2-S2 Model
-python tools/convert_weights.py --source PATH-TO-InternVid2-S2.pt --target PATH-TO-InternVid2-S2.ckpt --type internvid
+python utils/convert_weights.py --source PATH-TO-InternVid2-S2.pt --target PATH-TO-InternVid2-S2.ckpt --type internvid
 
 # convert HPSv2.1 Model
-python tools/convert_weights.py --source PATH-TO-HPSv2.1.pt --target PATH-TO-HPSv2.1.ckpt --type hps
+python utils/convert_weights.py --source PATH-TO-HPSv2.1.pt --target PATH-TO-HPSv2.1.ckpt --type hps
 ```
 
 6. Set `--pretrained_model_path`, `--data_path`, `--csv_path` and `--image_rm_ckpt_dir`, `--video_rm_ckpt_dir` accordingly in `scripts/train_t2v_turbo_vc2.sh`.
