@@ -7,8 +7,6 @@
 #
 # thanks!
 
-from utils.utils import instantiate_from_config
-
 import mindspore as ms
 from mindspore import nn, ops
 
@@ -116,15 +114,3 @@ def rearrange_out_gn5d(x):
     x = ops.reshape(x, (-1, c, h, w))
 
     return x
-
-
-class HybridConditioner(nn.Cell):
-    def __init__(self, c_concat_config, c_crossattn_config):
-        super().__init__()
-        self.concat_conditioner = instantiate_from_config(c_concat_config)
-        self.crossattn_conditioner = instantiate_from_config(c_crossattn_config)
-
-    def construct(self, c_concat, c_crossattn):
-        c_concat = self.concat_conditioner(c_concat)
-        c_crossattn = self.crossattn_conditioner(c_crossattn)
-        return {"c_concat": [c_concat], "c_crossattn": [c_crossattn]}

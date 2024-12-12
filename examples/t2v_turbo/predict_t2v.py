@@ -23,13 +23,13 @@ from pipeline.t2v_turbo_ms_pipeline import T2VTurboMSPipeline
 from pipeline.t2v_turbo_vc2_pipeline import T2VTurboVC2Pipeline
 from scheduler.t2v_turbo_scheduler import T2VTurboScheduler
 from utils.common_utils import load_model_checkpoint, set_torch_2_attn
-from utils.convert_weights import convert_lora, convert_t2v_vc2
 from utils.download import DownLoad
 from utils.env import init_env
 from utils.lora import collapse_lora, monkeypatch_remove_lora
 from utils.lora_handler import LoraHandler
 from utils.utils import instantiate_from_config
 
+from examples.t2v_turbo.tools.convert_weights import convert_lora, convert_t2v_vc2
 from mindone.diffusers import AutoencoderKL
 from mindone.transformers import CLIPTextModel
 from mindone.utils.amp import auto_mixed_precision
